@@ -1,0 +1,39 @@
+sources:
+  docker_logs:
+    type: docker_logs
+    include_containers:
+      - "firstapp_"
+      - "secondapp_"
+
+transforms:
+  drop_hetrixtools:
+    type: filter
+    inputs: [docker_logs]
+    condition: .message != null && !contains(string!(.message), "HetrixTools")
+
+  drop_404_api_spam:
+    type: filter
+    inputs: [drop_hetrixtools]
+    condition: .status != 404
+
+  drop_docker_healthchecks:
+    type: filter
+    inputs: [drop_404_api_spam]
+    condition:
+      type: vrl
+      source: |
+        !(exists(.message) &&
+          contains(string!(.message), "127.0.0.1") &&
+          contains(string!(.message), "GET / HTTP/1.1") &&
+          contains(string!(.message), "Wget"))
+
+sinks:
+  victorialogs:
+    type: http
+    inputs: [drop_docker_healthchecks]
+    uri: http://sonorusops_victorialogs:9428/insert/jsonline?_stream_fields=source_type,container_name,stream&_time_field=timestamp&_msg_field=message
+    compression: gzip
+    framing:
+      method: newline_delimited
+    encoding:
+      codec: json

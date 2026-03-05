@@ -1,0 +1,94 @@
+name: sonorusops
+
+services:
+  sonorusops_victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.137.0-scratch
+    container_name: sonorusops_victoriametrics
+    restart: unless-stopped
+    command:
+      - "-httpListenAddr=:8428"
+      - "-promscrape.config=/etc/victoriametrics/scrape.yml"
+    volumes:
+      - ./victoriametrics.yaml:/etc/victoriametrics/scrape.yml:ro
+    networks:
+      - sonorusops-network
+
+  sonorusops_victorialogs:
+    image: victoriametrics/victoria-logs:v1.47.0
+    container_name: sonorusops_victorialogs
+    restart: unless-stopped
+    command:
+      - "--storageDataPath=/vlogs"
+    volumes:
+      - ./vldata:/vlogs
+    networks:
+      - sonorusops-network
+
+  sonorusops_jaeger:
+    image: jaegertracing/jaeger:2.15.1
+    container_name: sonorusops_jaeger
+    restart: unless-stopped
+    environment:
+      - SPAN_STORAGE_TYPE=badger # Хранилище на диске
+      - BADGER_EPHEMERAL=false # Сохранять данные после перезапуска
+      - BADGER_DIRECTORY_VALUE=/badger/data
+      - BADGER_DIRECTORY_KEY=/badger/key
+    volumes:
+      - ./jaeger-data:/badger
+    ports:
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+    networks:
+      - sonorusops-network
+
+  sonorusops_nodeexporter:
+    depends_on:
+      - sonorusops_victoriametrics
+    image: quay.io/prometheus/node-exporter:v1.10.2
+    container_name: sonorusops_nodeexporter
+    restart: unless-stopped
+    command: --path.rootfs=/host
+    volumes:
+      - "/:/host:ro,rslave" # Доступ к файловой системе хоста (read-only)
+    pid: host # Доступ к процессам хоста
+    networks:
+      - sonorusops-network
+
+  sonorusops_vector:
+    depends_on:
+      - sonorusops_victorialogs
+    image: timberio/vector:0.53.X-alpine
+    container_name: sonorusops_vector
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+      - type: bind
+        source: /var/lib/docker
+        target: /var/lib/docker
+      - ./vector.yaml:/etc/vector/vector.yaml:ro
+    networks:
+      - sonorusops-network
+
+  sonorusops_grafana:
+    image: grafana/grafana:12.3
+    container_name: sonorusops_grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_DEFAULT_THEME=system
+      - GF_INSTALL_PLUGINS=victoriametrics-metrics-datasource,victoriametrics-logs-datasource
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=victoriametrics-metrics-datasource,victoriametrics-logs-datasource
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "4300:3000"
+    networks:
+      - sonorusops-network
+
+networks:
+  sonorusops-network:
+    external: true

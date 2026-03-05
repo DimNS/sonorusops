@@ -1,0 +1,13 @@
+apiVersion: 1
+
+datasources:
+  - name: "firstapp-postgres"
+    type: postgres
+    access: proxy
+    url: firstapp_db:5432
+    user: postgres
+    secureJsonData:
+      password: "postgres"
+    jsonData:
+      database: postgres
+      sslmode: "disable"

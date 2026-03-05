@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "firstapp_metrics"
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "firstapp_backend:8080"
+        labels:
+          project_name: "firstapp"
+
+  - job_name: "nodeexporter"
+    static_configs:
+      - targets: ["sonorusops_nodeexporter:9100"]

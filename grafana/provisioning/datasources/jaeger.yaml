@@ -1,0 +1,7 @@
+apiVersion: 1
+
+datasources:
+  - name: "jaeger"
+    type: jaeger
+    access: proxy
+    url: http://sonorusops_jaeger:16686
