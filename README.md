@@ -21,11 +21,11 @@ Etymology of the word SonorusOps: sonar + chorus + ops.
             image: ghcr.io/firstapp/backend:latest
             container_name: firstapp_backend
             labels:
-                - "app.project.name=firstapp"
-                - "app.service.name=api"
-                - "app.service.type=backend"
+                - 'app.project.name=firstapp'
+                - 'app.service.name=api'
+                - 'app.service.type=backend'
             environment:
-                OTEL_EXPORTER_OTLP_ENDPOINT: "http://sonorusops_jaeger:4318"
+                OTEL_EXPORTER_OTLP_ENDPOINT: 'http://sonorusops_jaeger:4318'
             networks:
                 - firstapp-network
                 - sonorusops-network
@@ -34,9 +34,9 @@ Etymology of the word SonorusOps: sonar + chorus + ops.
             image: ghcr.io/firstapp/frontend:latest
             container_name: firstapp_frontend
             labels:
-                - "app.project.name=firstapp"
-                - "app.service.name=ui"
-                - "app.service.type=frontend"
+                - 'app.project.name=firstapp'
+                - 'app.service.name=ui'
+                - 'app.service.type=frontend'
             networks:
                 - firstapp-network
                 - sonorusops-network
@@ -65,11 +65,11 @@ Etymology of the word SonorusOps: sonar + chorus + ops.
             image: ghcr.io/secondapp/backend:latest
             container_name: secondapp_backend
             labels:
-                - "app.project.name=secondapp"
-                - "app.service.name=api"
-                - "app.service.type=backend"
+                - 'app.project.name=secondapp'
+                - 'app.service.name=api'
+                - 'app.service.type=backend'
             environment:
-                OTEL_EXPORTER_OTLP_ENDPOINT: "http://sonorusops_jaeger:4318"
+                OTEL_EXPORTER_OTLP_ENDPOINT: 'http://sonorusops_jaeger:4318'
             networks:
                 - secondapp-network
                 - sonorusops-network
@@ -78,9 +78,9 @@ Etymology of the word SonorusOps: sonar + chorus + ops.
             image: ghcr.io/secondapp/frontend:latest
             container_name: secondapp_frontend
             labels:
-                - "app.project.name=secondapp"
-                - "app.service.name=ui"
-                - "app.service.type=frontend"
+                - 'app.project.name=secondapp'
+                - 'app.service.name=ui'
+                - 'app.service.type=frontend'
             networks:
                 - secondapp-network
                 - sonorusops-network
@@ -106,3 +106,40 @@ Etymology of the word SonorusOps: sonar + chorus + ops.
 - Edit job in `victoriametrics.yaml`.
 - Create network: `docker network create sonorusops-network`
 - Run: `docker compose up -d`
+
+## VictoriaMetrics scrape config from file
+
+- victoriametrics/targets/firstapp.json:
+    ```json
+    [
+        {
+            "targets": ["firstapp_backend:6060"],
+            "labels": {
+                "project_name": "firstapp"
+            }
+        }
+    ]
+    ```
+- victoriametrics.yaml:
+    ```yaml
+    scrape_configs:
+    - job_name: "firstapp_metrics"
+        metrics_path: /metrics
+        file_sd_configs:
+        - files:
+            - "/etc/victoriametrics/targets/firstapp.json"
+    ```
+- compose.yaml:
+    ```yaml
+    services:
+    sonorusops_victoriametrics:
+        image: victoriametrics/victoria-metrics:v1.137.0-scratch
+        container_name: sonorusops_victoriametrics
+        restart: unless-stopped
+        command:
+            - '-httpListenAddr=:8428'
+            - '-promscrape.config=/etc/victoriametrics/scrape.yml'
+        volumes:
+            - ./victoriametrics.yaml:/etc/victoriametrics/scrape.yml:ro
+            - ./victoriametrics/targets:/etc/victoriametrics/targets:ro
+    ```
