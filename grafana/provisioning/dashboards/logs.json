@@ -18,82 +18,39 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 0,
   "links": [],
   "panels": [
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
+        "type": "victoriametrics-logs-datasource",
+        "uid": "P022A0A8F82CACB18"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "fixed"
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 3,
-        "x": 0,
-        "y": 0
-      },
-      "id": 4,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.3.4",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "label.app.project.name:${project}\r\n| stats count() ",
-          "queryType": "statsRange",
-          "refId": "A"
-        }
-      ],
-      "title": "Total logs",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -110,56 +67,79 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 3,
+        "w": 20,
+        "x": 0,
         "y": 0
       },
       "id": 1,
       "options": {
-        "displayMode": "lcd",
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "hidden",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "orientation": "auto",
+        "showValue": "never",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
         },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
+        "xField": "Time",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 100
       },
       "pluginVersion": "12.3.4",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
+            "type": "victoriametrics-logs-datasource",
+            "uid": "P022A0A8F82CACB18"
           },
           "editorMode": "code",
-          "expr": "label.app.project.name:${project} AND label.app.service.type:backend\r\n| unpack_json\r\n| level:*\r\n| stats by (level) count() total\r\n| sort by(total) desc",
-          "legendFormat": "{{level}}",
-          "queryType": "stats",
+          "expr": "label.app.project.name:${project} AND label.app.service.type:in(backend,frontend,all-in-one)\r\n| stats by (_time:1m) count() logs_volume",
+          "queryType": "statsRange",
           "refId": "A"
         }
       ],
-      "title": "Backend logs by level",
-      "type": "bargauge"
+      "title": "Logs volume",
+      "type": "barchart"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "#### Unpack and level filter\n```\n| unpack_json\n| level:in(debug,info,warn,error,fatal)\n```",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.3.4",
+      "title": "Tips and tricks",
+      "type": "text"
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
+        "type": "victoriametrics-logs-datasource",
+        "uid": "P022A0A8F82CACB18"
       },
       "fieldConfig": {
         "defaults": {
@@ -184,9 +164,6 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineStyle": {
-              "fill": "solid"
-            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -223,12 +200,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 6,
         "w": 24,
         "x": 0,
         "y": 6
       },
-      "id": 5,
+      "id": 4,
       "options": {
         "legend": {
           "calcs": [
@@ -249,8 +226,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
+            "type": "victoriametrics-logs-datasource",
+            "uid": "P022A0A8F82CACB18"
           },
           "editorMode": "code",
           "expr": "label.app.project.name:${project}\r\n| stats by (label.app.service.name) rate() logs_rate\r\n| filter logs_rate: > 0",
@@ -261,25 +238,58 @@
       ],
       "title": "Logs rate",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "P022A0A8F82CACB18"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 23,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 2,
+      "options": {
+        "dedupStrategy": "none",
+        "detailsMode": "inline",
+        "enableInfiniteScrolling": false,
+        "enableLogDetails": true,
+        "fontSize": "small",
+        "showControls": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "timestampResolution": "ms",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "12.3.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "P022A0A8F82CACB18"
+          },
+          "direction": "desc",
+          "editorMode": "code",
+          "expr": "label.app.project.name:${project} AND label.app.service.type:in(backend,frontend,all-in-one)",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Logs",
+      "type": "logs"
     }
   ],
   "preload": false,
-  "refresh": "",
   "schemaVersion": 42,
-  "tags": [
-    "victorialogs"
-  ],
+  "tags": [],
   "templating": {
     "list": [
-      {
-        "current": {},
-        "name": "datasource",
-        "options": [],
-        "query": "victoriametrics-logs-datasource",
-        "refresh": 1,
-        "regex": "",
-        "type": "datasource"
-      },
       {
         "allowCustomValue": false,
         "current": {},
@@ -288,7 +298,6 @@
           "uid": "P022A0A8F82CACB18"
         },
         "definition": "",
-        "includeAll": false,
         "name": "project",
         "options": [],
         "query": {
@@ -305,12 +314,12 @@
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
-  "timezone": "Asia/Yekaterinburg",
-  "title": "Logs Metrics",
-  "uid": "fely8mzpilkaoe",
-  "version": 1
+  "timezone": "browser",
+  "title": "Logs",
+  "uid": "adl89lh",
+  "version": 8
 }
