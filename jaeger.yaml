@@ -1,0 +1,53 @@
+# 1. Определяем, откуда Jaeger будет получать данные
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+# 2. Процессор для батчинга, снижает нагрузку на диск
+processors:
+  batch:
+    timeout: 1s                # Отправлять батч раз в секунду, даже если он не полный
+    send_batch_size: 1024      # Отправлять, как только накопится 1024 спана
+    send_batch_max_size: 2048  # Жёсткий лимит: больше 2048 спанов в одном батче не будет
+
+# 3. Определяем, куда данные будут записываться
+exporters:
+  # Специальный экспортер Jaeger, который пишет в бэкенд,
+  # зарегистрированный в расширении jaeger_storage
+  jaeger_storage_exporter:
+    trace_storage: badger_store # Ссылаемся на имя бэкенда ниже
+
+# 4. Настройка хранилища и UI
+extensions:
+  jaeger_storage:
+    backends:
+      badger_store:
+        badger:
+          directories:
+            keys: "/opt/jaeger/badger/keys/"
+            values: "/opt/jaeger/badger/values/"
+          ephemeral: false
+          ttl:
+            spans: 168h # 7 days
+
+  # Расширение для UI и API запросов
+  jaeger_query:
+    storage:
+      traces: badger_store # UI также читает из badger_store
+    http:
+      endpoint: 0.0.0.0:16686 # Стандартный порт для UI
+    grpc:
+      endpoint: 0.0.0.0:16685
+
+# 5. Собираем всё вместе в рабочий конвейер
+service:
+  extensions: [jaeger_storage, jaeger_query]
+  pipelines:
+    traces:
+      receivers: [otlp] # Принимаем OTLP
+      processors: [batch] # Батчим
+      exporters: [jaeger_storage_exporter] # Пишем в Badger

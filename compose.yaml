@@ -28,13 +28,10 @@ services:
     image: jaegertracing/jaeger:2.15.1
     container_name: sonorusops_jaeger
     restart: unless-stopped
-    environment:
-      - SPAN_STORAGE_TYPE=badger # Хранилище на диске
-      - BADGER_EPHEMERAL=false # Сохранять данные после перезапуска
-      - BADGER_DIRECTORY_VALUE=/badger/data
-      - BADGER_DIRECTORY_KEY=/badger/key
+    command: --config /opt/jaeger/config.yaml
     volumes:
-      - ./jaeger-data:/badger
+      - ./jaeger.yaml:/opt/jaeger/config.yaml:ro
+      - ./jaeger-data:/opt/jaeger/badger
     ports:
       - "127.0.0.1:4317:4317" # OTLP gRPC
       - "127.0.0.1:4318:4318" # OTLP HTTP

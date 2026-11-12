@@ -106,3 +106,6 @@ Etymology of the word SonorusOps: sonar + chorus + ops.
 - Edit job in `prometheus.yaml`.
 - Create network: `docker network create sonorusops-network`
 - Run: `docker compose up -d`
+
+## Patch
+- `sudo chown -R 10001:10001 ./jaeger-data`
