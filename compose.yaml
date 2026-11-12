@@ -1,15 +1,15 @@
 name: sonorusops
 
 services:
-  sonorusops_victoriametrics:
-    image: victoriametrics/victoria-metrics:v1.137.0-scratch
-    container_name: sonorusops_victoriametrics
+  sonorusops_prompp:
+    image: prompp/prompp:0.8.18
+    container_name: sonorusops_prompp
     restart: unless-stopped
     command:
-      - "-httpListenAddr=:8428"
-      - "-promscrape.config=/etc/victoriametrics/scrape.yml"
+      - "--config.file=/etc/prometheus.yaml"
     volumes:
-      - ./victoriametrics.yaml:/etc/victoriametrics/scrape.yml:ro
+      - ./prometheus.yaml:/etc/prometheus.yaml:ro
+      - ./prometheus/targets:/etc/prometheus/targets:ro
     networks:
       - sonorusops-network
 
@@ -36,8 +36,8 @@ services:
     volumes:
       - ./jaeger-data:/badger
     ports:
-      - "4317:4317" # OTLP gRPC
-      - "4318:4318" # OTLP HTTP
+      - "127.0.0.1:4317:4317" # OTLP gRPC
+      - "127.0.0.1:4318:4318" # OTLP HTTP
     networks:
       - sonorusops-network
 
@@ -85,7 +85,7 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
     ports:
-      - "4300:3000"
+      - "127.0.0.1:4300:3000"
     networks:
       - sonorusops-network
 

@@ -1,5 +1,7 @@
 global:
-  scrape_interval: 15s
+  scrape_interval: 30s
+  scrape_timeout: 10s
+  evaluation_interval: 1m
 
 scrape_configs:
   - job_name: "firstapp_metrics"
@@ -9,6 +11,13 @@ scrape_configs:
           - "firstapp_backend:8080"
         labels:
           project_name: "firstapp"
+
+  - job_name: "secondapp_metrics"
+    metrics_path: /metrics
+    file_sd_configs:
+      - files:
+          - "/etc/prometheus/targets/secondapp.yaml"
+        refresh_interval: 1m
 
   - job_name: "nodeexporter"
     static_configs:
