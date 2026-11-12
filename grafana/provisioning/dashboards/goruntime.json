@@ -1664,7 +1664,7 @@
   "schemaVersion": 42,
   "tags": [
     "golang",
-    "victoriametrics"
+    "prometheus"
   ],
   "templating": {
     "list": [
@@ -1674,7 +1674,7 @@
         "description": "",
         "name": "datasource",
         "options": [],
-        "query": "victoriametrics-metrics-datasource",
+        "query": "prometheus",
         "refresh": 1,
         "regex": "(?!grafanacloud-usage|grafanacloud-ml-metrics).+",
         "type": "datasource"
@@ -1683,7 +1683,7 @@
         "allowCustomValue": false,
         "current": {},
         "datasource": {
-          "type": "victoriametrics-metrics-datasource",
+          "type": "prometheus",
           "uid": "${datasource}"
         },
         "definition": "label_values(project_name)",

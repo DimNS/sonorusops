@@ -37,7 +37,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${victoriametrics}"
+        "uid": "${prometheus}"
       },
       "fieldConfig": {
         "defaults": {
@@ -90,7 +90,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${victoriametrics}"
+            "uid": "${prometheus}"
           },
           "editorMode": "code",
           "expr": "go_sql_in_use_connections{project_name=\"${project}\", db_name=\"${dbname}\"}",
@@ -102,7 +102,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${victoriametrics}"
+            "uid": "${prometheus}"
           },
           "editorMode": "code",
           "expr": "$sql_max_open_conn",
@@ -136,7 +136,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${victoriametrics}"
+        "uid": "${prometheus}"
       },
       "fieldConfig": {
         "defaults": {
@@ -188,7 +188,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${victoriametrics}"
+            "uid": "${prometheus}"
           },
           "editorMode": "code",
           "expr": "go_sql_open_connections{project_name=\"${project}\", db_name=\"${dbname}\"}",
@@ -200,7 +200,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${victoriametrics}"
+            "uid": "${prometheus}"
           },
           "editorMode": "code",
           "expr": "$sql_max_open_conn",
@@ -234,7 +234,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${victoriametrics}"
+        "uid": "${prometheus}"
       },
       "fieldConfig": {
         "defaults": {
@@ -287,7 +287,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${victoriametrics}"
+            "uid": "${prometheus}"
           },
           "editorMode": "code",
           "expr": "$sql_max_open_conn",
@@ -1151,7 +1151,7 @@
   "schemaVersion": 42,
   "tags": [
     "postgresql",
-    "victoriametrics"
+    "prometheus"
   ],
   "templating": {
     "list": [
@@ -1187,9 +1187,9 @@
       {
         "allowCustomValue": false,
         "current": {},
-        "name": "victoriametrics",
+        "name": "prometheus",
         "options": [],
-        "query": "victoriametrics-metrics-datasource",
+        "query": "prometheus",
         "refresh": 1,
         "regex": "",
         "type": "datasource"
@@ -1199,7 +1199,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${victoriametrics}"
+          "uid": "${prometheus}"
         },
         "definition": "label_values(project_name)",
         "name": "project",
@@ -1221,7 +1221,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${victoriametrics}"
+          "uid": "${prometheus}"
         },
         "definition": "query_result(go_sql_max_open_connections{project_name=\"${project}\", db_name=\"${dbname}\"})",
         "name": "sql_max_open_conn",

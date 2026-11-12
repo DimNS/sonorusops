@@ -103,6 +103,6 @@ Etymology of the word SonorusOps: sonar + chorus + ops.
 - Clone: `git clone https://github.com/DimNS/sonorusops.git`
 - Edit datasource PostgreSQL in `grafana/provisioning/datasources/firstapp-postgres.yaml`.
 - Edit include containers in `vector.yaml`.
-- Edit job in `victoriametrics.yaml`.
+- Edit job in `prometheus.yaml`.
 - Create network: `docker network create sonorusops-network`
 - Run: `docker compose up -d`

@@ -43,7 +43,7 @@ services:
 
   sonorusops_nodeexporter:
     depends_on:
-      - sonorusops_victoriametrics
+      - sonorusops_prompp
     image: quay.io/prometheus/node-exporter:v1.10.2
     container_name: sonorusops_nodeexporter
     restart: unless-stopped
@@ -80,8 +80,8 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_DEFAULT_THEME=system
-      - GF_INSTALL_PLUGINS=victoriametrics-metrics-datasource,victoriametrics-logs-datasource
-      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=victoriametrics-metrics-datasource,victoriametrics-logs-datasource
+      - GF_INSTALL_PLUGINS=victoriametrics-logs-datasource
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=victoriametrics-logs-datasource
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
     ports:

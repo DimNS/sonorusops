@@ -568,20 +568,20 @@
   "refresh": "",
   "schemaVersion": 42,
   "tags": [
-    "victoriametrics"
+    "prometheus"
   ],
   "templating": {
     "list": [
       {
         "allowCustomValue": false,
         "current": {
-          "text": "victoriametrics",
+          "text": "prometheus",
           "value": "PABDA7AB1AD2A1489"
         },
         "description": "",
         "name": "datasource",
         "options": [],
-        "query": "victoriametrics-metrics-datasource",
+        "query": "prometheus",
         "refresh": 1,
         "regex": "(?!grafanacloud-usage|grafanacloud-ml-metrics).+",
         "type": "datasource"
@@ -590,7 +590,7 @@
         "allowCustomValue": false,
         "current": {},
         "datasource": {
-          "type": "victoriametrics-metrics-datasource",
+          "type": "prometheus",
           "uid": "${datasource}"
         },
         "definition": "label_values(project_name)",

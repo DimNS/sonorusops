@@ -2781,7 +2781,7 @@
   "refresh": "5s",
   "schemaVersion": 42,
   "tags": [
-    "victoriametrics"
+    "prometheus"
   ],
   "templating": {
     "list": [
@@ -2791,7 +2791,7 @@
         "includeAll": false,
         "name": "datasource",
         "options": [],
-        "query": "victoriametrics-metrics-datasource",
+        "query": "prometheus",
         "refresh": 1,
         "regex": "",
         "type": "datasource"
